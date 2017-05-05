@@ -1,7 +1,11 @@
 import * as React from 'react';
 
+
 import MapBuilder from './map-builder';
+import NumberBuilder from './number-builder';
 import StringBuilder from './string-builder';
+
+import { YELLOW } from '../../core/colors';
 import { Data, DataType, ListData, MapData, StringData, NumberData } from '../../core/models'
 
 import BuilderMenu, {BuilderType} from './builder-menu';
@@ -17,6 +21,10 @@ interface State {
 
 }
 
+const SpanStyle = {
+    color: YELLOW
+}
+
 export default class ListBuilder extends React.Component<Props, State> {
 
     constructor(props: Props) {
@@ -27,16 +35,21 @@ export default class ListBuilder extends React.Component<Props, State> {
     render() {
         return (
             <div className="builder">
-                [
+                <span style={SpanStyle}>[</span>
                     {this.props.list.values.map(this.renderData)}
                     <BuilderMenu onBuilderSelected={this.onAddBuilder} />
-                ]
+                <span style={SpanStyle}>]</span>
             </div>
         )
     }
 
     renderData = (data: Data, index: number) => {
         switch (data.dataType) {
+            case DataType.Number:
+                return <NumberBuilder
+                            key={index}
+                            data={data as NumberData}
+                            mutateNumber={n => this.mutateData(index, n)}/>
             case DataType.String:
                 return <StringBuilder
                             key={index}
@@ -70,7 +83,7 @@ export default class ListBuilder extends React.Component<Props, State> {
                 list.values.push(new NumberData(0));
                 break;
             case BuilderType.StringBuilder:
-                list.values.push(new StringData("String"));
+                list.values.push(new StringData(""));
                 break;
             case BuilderType.ListBuilder:
                 list.values.push(new ListData([]));

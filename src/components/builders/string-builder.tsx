@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import TextField from 'material-ui/TextField';
+
+import {BLACK, GREEN} from '../../core/colors';
 import { Data, DataType, ListData, StringData } from '../../core/models'
 
 interface Props {
@@ -15,7 +17,22 @@ interface State {
     editing: boolean
 }
 
+const InputStyle = {
+    backgroundColor: BLACK,
+    fontSize: '1em',
+    color: GREEN,
+    textDecoration: 'underline',
+    border: 'none'
+}
+
+const SpanStyle = {
+    fontSize: '1em',
+    color: GREEN
+}
+
 export default class StringBuilder extends React.Component<Props, State> {
+
+    private input;
 
     constructor(props: Props) {
         super(props)
@@ -28,26 +45,28 @@ export default class StringBuilder extends React.Component<Props, State> {
 
     render() {
         if (this.state.editing) {
-            let ref;
-            const input = <TextField
-                name="string-edit"
-                style={{width: '50px'}}
-                value={this.state.value}
-                ref={input => input && input.focus()}
-                onChange={this.onDataEdit}
-                onKeyDown={this.onDataEnter} />
-
+            const width = this.state.value.length * 10;
+            const style = {
+                ...InputStyle,
+                width: `${width}px`
+            }
             return (
                 <div className="builder">
-                    {input}
+                    <input
+                        style={style}
+                        value={this.state.value}
+                        ref={ref => ref && ref.focus()}
+                        onChange={this.onDataEdit}
+                        onKeyDown={this.onDataEnter} />
                 </div>
             )
         } else {
             return (
                 <div className="builder">
-                    <span className="clickable"
-                        onClick={this.onDataClick}>
+                    <span style={SpanStyle} className="clickable" onClick={this.onDataClick}>
+                        "
                         {this.props.data.value}
+                        "
                     </span>
                 </div>
             )

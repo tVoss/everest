@@ -88,6 +88,7 @@ export default class CommandLine extends React.Component<Props, State> {
 
         return (
             <Paper key={index} style={LineStyle}>
+                <span>{index}:</span>
                 {builder}
                 <div style={ResultStyle}>
                     {this.state.data[i].toString()}

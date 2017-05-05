@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import TextField from 'material-ui/TextField';
+import {BLACK, ORANGE} from '../../core/colors';
 import { Data, DataType, NumberData } from '../../core/models'
 
 interface Props {
@@ -13,6 +13,19 @@ interface Props {
 interface State {
     value: string
     editing: boolean
+}
+
+const InputStyle = {
+    backgroundColor: BLACK,
+    fontSize: '1em',
+    color: ORANGE,
+    textDecoration: 'underline',
+    border: 'none'
+}
+
+const SpanStyle = {
+    color: ORANGE,
+    fontSize: '1em'
 }
 
 export default class NumberBuilder extends React.Component<Props, State> {
@@ -28,24 +41,26 @@ export default class NumberBuilder extends React.Component<Props, State> {
 
     render() {
         if (this.state.editing) {
-            let ref;
-            const input = <TextField
-                name="string-edit"
-                style={{width: '50px'}}
-                value={this.state.value}
-                ref={input => input && input.focus()}
-                onChange={this.onDataEdit}
-                onKeyDown={this.onDataEnter} />
+            const width = this.state.value.length * 10;
+            const style = {
+                ...InputStyle,
+                width: `${width}px`
+            }
 
             return (
                 <div className="builder">
-                    {input}
+                    <input
+                        style={style}
+                        value={this.state.value}
+                        ref={ref => ref && ref.focus()}
+                        onChange={this.onDataEdit}
+                        onKeyDown={this.onDataEnter} />
                 </div>
             )
         } else {
             return (
                 <div className="builder">
-                    <span className="clickable"
+                    <span style={SpanStyle} className="clickable"
                         onClick={this.onDataClick}>
                         {this.props.data.value}
                     </span>
@@ -65,7 +80,7 @@ export default class NumberBuilder extends React.Component<Props, State> {
         if (isNaN(e.target.value)) {
             return;
         }
-        
+
         this.setState({
             ...this.state,
             value: e.target.value

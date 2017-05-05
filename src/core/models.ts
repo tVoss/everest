@@ -10,9 +10,6 @@ export enum DataType {
     List
 }
 
-export type PrimitiveData = StringData | NumberData;
-export type IterableData = MapData | ListData;
-
 export class StringData implements Data {
 
     readonly value: string
@@ -41,11 +38,11 @@ export class NumberData implements Data {
 }
 
 export class MapData implements Data {
-    readonly keys: PrimitiveData[]
+    readonly keys: StringData[]
     readonly values: Data[]
     readonly dataType = DataType.Map;
 
-    constructor(keys: PrimitiveData[], values: Data[]) {
+    constructor(keys: StringData[], values: Data[]) {
         this.keys = keys;
         this.values = values;
     }
@@ -78,7 +75,7 @@ export class ListData implements Data {
         if (this.values.length === 0) {
             return "[ ]";
         }
-        
+
         let str = "[ ";
         for (let i = 0; i < this.values.length; i++) {
             str += this.values[i].toString();

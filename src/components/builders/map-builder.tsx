@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import BuilderMenu, { BuilderType } from './builder-menu';
 import ListBuilder from './list-builder'
 import NumberBuilder from './number-builder'
 import StringBuilder from './string-builder';
@@ -28,44 +29,42 @@ export default class MapBuilder extends React.Component<Props, State> {
 
         return (
             <div className="builder">
-                {"{"}
+                <span>{"{"}</span>
                     {this.props.map.keys.map(this.renderData)}
-                    <span className="clickable" onClick={this.onAddClicked}>
-                        <i className="fa fa-plus" aria-hidden="true"></i>
-                    </span>
-                {"}"}
+                    <BuilderMenu onBuilderSelected={this.onAddBuilder}/>
+                <span>{"}"}</span>
             </div>
         )
     }
 
     renderData = (data: Data, index: number) => {
-        const key = data.dataType === DataType.Number
-            ? <NumberBuilder data={data as NumberData} mutateNumber={n => this.mutateKey(index, n)} />
-            : <StringBuilder data={data as StringData} mutateString={s => this.mutateKey(index, s)} />
-
         let value;
-        switch (this.props.map.values[index].dataType) {
+        const dataVal = this.props.map.values[index];
+        switch (dataVal.dataType) {
             case DataType.Number:
-                value = <NumberBuilder data={data as NumberData} mutateNumber={n => this.mutateValue(index, n)} />
+                value = <NumberBuilder data={dataVal as NumberData} mutateNumber={n => this.mutateValue(index, n)} />
                 break;
             case DataType.String:
-                value = <StringBuilder data={data as StringData} mutateString={s => this.mutateValue(index, s)} />
+                value = <StringBuilder data={dataVal as StringData} mutateString={s => this.mutateValue(index, s)} />
                 break;
             case DataType.List:
-                value = <ListBuilder list={data as ListData} mutateList={l => this.mutateValue(index, l)} />
+                value = <ListBuilder list={dataVal as ListData} mutateList={l => this.mutateValue(index, l)} />
                 break;
             case DataType.Map:
-                value = <MapBuilder map={data as MapData} mutateMap={m => this.mutateValue(index, m)} />
+                value = <MapBuilder map={dataVal as MapData} mutateMap={m => this.mutateValue(index, m)} />
         }
 
         return (
             <span>
-                {key}:{value}
+                <StringBuilder
+                    data={data as StringData}
+                    mutateString={s => this.mutateKey(index, s)} />
+                :{value}
             </span>
         )
     }
 
-    mutateKey = (index: number, data: NumberData | StringData) => {
+    mutateKey = (index: number, data: StringData) => {
         // Does the key already exist?
         if (this.props.map.keys.map(k => k.value).indexOf(data.value) > -1) {
             return;
@@ -82,8 +81,27 @@ export default class MapBuilder extends React.Component<Props, State> {
         this.props.mutateMap(map);
     }
 
-    onAddClicked = () => {
-
+    onAddBuilder = (builder: BuilderType) => {
+        const {map} = this.props;
+        let keyno = 0;
+        while (map.keys.map(k => k.value).indexOf(`key${keyno}`) > -1) {
+            keyno++;
+        }
+        map.keys.push(new StringData(`key${keyno}`));
+        switch (builder) {
+            case BuilderType.NumberBuilder:
+                map.values.push(new NumberData(0));
+                break;
+            case BuilderType.StringBuilder:
+                map.values.push(new StringData(""));
+                break;
+            case BuilderType.ListBuilder:
+                map.values.push(new ListData([]));
+                break;
+            case BuilderType.MapBuilder:
+                map.values.push(new MapData([], []));
+        }
+        this.props.mutateMap(map);
     }
 
 }
