@@ -1,0 +1,18 @@
+* {
+    color: #ABB2BF;
+    font-family: "Courier New", Courier, monospace;
+}
+
+body {
+    margin: 0
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.builder {
+    display: inline-block;
+    padding: 5px;
+    margin: 5px;
+}
