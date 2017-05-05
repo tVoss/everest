@@ -1,21 +1,16 @@
 import * as React from 'react';
 
 import Paper from 'material-ui/Paper'
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem'
-
 import { Data, StringData, NumberData, ListData, MapData } from '../core/models';
 
+import BuilderMenu from './builders/builder-menu';
+import { BuilderType } from './builders/builder-menu';
 import ListBuilder from './builders/list-builder'
 import NumberBuilder from './builders/number-builder'
+import MapBuilder from './builders/map-builder'
 import StringBuilder from './builders/string-builder'
 
-enum BuilderType {
-    StringBuilder,
-    NumberBuilder,
-    ListBuilder,
-    MapBuilder
-}
+
 
 interface Props {
 
@@ -59,12 +54,7 @@ export default class CommandLine extends React.Component<Props, State> {
         return (
             <div>
                 { Object.keys(commands).map(this.renderCommands) }
-                <SelectField floatingLabelText="+" autoWidth={true} onChange={this.addCommand}>
-                    <MenuItem value={BuilderType.StringBuilder} primaryText="String" />
-                    <MenuItem value={BuilderType.NumberBuilder} primaryText="Number" />
-                    <MenuItem value={BuilderType.ListBuilder} primaryText="List" />
-                    <MenuItem value={BuilderType.MapBuilder} primaryText="Map" />
-                </SelectField>
+                <BuilderMenu onBuilderSelected={this.addCommand} />
             </div>
         )
     }
@@ -89,8 +79,10 @@ export default class CommandLine extends React.Component<Props, State> {
                             list={this.state.data[i] as ListData}
                             mutateList={l => this.mutateData(l, i)} />
                 break;
-            default:
-                builder = null;
+            case BuilderType.MapBuilder:
+                builder = <MapBuilder
+                            map={this.state.data[i] as MapData}
+                            mutateMap={m => this.mutateData(m, i)} />;
                 break;
         }
 
@@ -104,10 +96,10 @@ export default class CommandLine extends React.Component<Props, State> {
         )
     }
 
-    addCommand = (event, index, value) => {
+    addCommand = (builder: BuilderType) => {
         const state = this.state;
-        state.commands[state.index] = value;
-        switch (value) {
+        state.commands[state.index] = builder;
+        switch (builder) {
             case BuilderType.StringBuilder:
                 state.data[state.index] = new StringData("");
                 break;

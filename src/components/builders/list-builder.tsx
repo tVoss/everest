@@ -2,8 +2,9 @@ import * as React from 'react';
 
 import MapBuilder from './map-builder';
 import StringBuilder from './string-builder';
-import { Data, DataType, ListData, MapData, StringData } from '../../core/models'
+import { Data, DataType, ListData, MapData, StringData, NumberData } from '../../core/models'
 
+import BuilderMenu, {BuilderType} from './builder-menu';
 
 interface Props {
     // List data to display
@@ -28,9 +29,7 @@ export default class ListBuilder extends React.Component<Props, State> {
             <div className="builder">
                 [
                     {this.props.list.values.map(this.renderData)}
-                    <span className="clickable" onClick={this.onAddClicked}>
-                        <i className="fa fa-plus" aria-hidden="true"></i>
-                    </span>
+                    <BuilderMenu onBuilderSelected={this.onAddBuilder} />
                 ]
             </div>
         )
@@ -64,15 +63,20 @@ export default class ListBuilder extends React.Component<Props, State> {
         this.props.mutateList(list);
     }
 
-    onAddClicked = () => {
-        const list = this.props.list;
-        const input = prompt("Enter Value", "Blah");
-        if (input === "list") {
-            list.values.push(new ListData([]));
-        } else if (input === "map") {
-            list.values.push(new MapData([], []));
-        } else {
-            list.values.push(new StringData(input));
+    onAddBuilder = (builder: BuilderType) => {
+        const { list } = this.props;
+        switch (builder) {
+            case BuilderType.NumberBuilder:
+                list.values.push(new NumberData(0));
+                break;
+            case BuilderType.StringBuilder:
+                list.values.push(new StringData("String"));
+                break;
+            case BuilderType.ListBuilder:
+                list.values.push(new ListData([]));
+                break;
+            case BuilderType.MapBuilder:
+                list.values.push(new MapData([], []));
         }
         this.props.mutateList(list);
     }
