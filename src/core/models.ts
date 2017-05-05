@@ -51,6 +51,10 @@ export class MapData implements Data {
     }
 
     toString = (): string => {
+        if (this.keys.length === 0) {
+            return "{ }";
+        }
+
         let str = "{ ";
         for (let i = 0; i < this.keys.length; i++) {
             str += this.keys[i].toString();
@@ -71,6 +75,10 @@ export class ListData implements Data {
     }
 
     toString = (): string => {
+        if (this.values.length === 0) {
+            return "[ ]";
+        }
+        
         let str = "[ ";
         for (let i = 0; i < this.values.length; i++) {
             str += this.values[i].toString();

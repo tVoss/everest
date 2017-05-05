@@ -1,7 +1,8 @@
 import * as React from 'react';
 
+import MapBuilder from './map-builder';
 import StringBuilder from './string-builder';
-import { Data, DataType, ListData, StringData } from '../../core/models'
+import { Data, DataType, ListData, MapData, StringData } from '../../core/models'
 
 
 interface Props {
@@ -37,16 +38,21 @@ export default class ListBuilder extends React.Component<Props, State> {
 
     renderData = (data: Data, index: number) => {
         switch (data.dataType) {
-            case DataType.List:
-                return <ListBuilder
-                            key={index}
-                            list={data as ListData}
-                            mutateList={l => this.mutateData(index, l)} />
             case DataType.String:
                 return <StringBuilder
                             key={index}
                             data={data as StringData}
                             mutateString={s => this.mutateData(index, s)} />
+            case DataType.List:
+                return <ListBuilder
+                            key={index}
+                            list={data as ListData}
+                            mutateList={l => this.mutateData(index, l)} />
+            case DataType.Map:
+                return <MapBuilder
+                            key={index}
+                            map={data as MapData}
+                            mutateMap={m => this.mutateData(index, m)} />
             default:
                 return data.toString();
         }
@@ -56,7 +62,6 @@ export default class ListBuilder extends React.Component<Props, State> {
         const list = this.props.list;
         list.values[index] = data;
         this.props.mutateList(list);
-        this.forceUpdate();
     }
 
     onAddClicked = () => {
@@ -64,6 +69,8 @@ export default class ListBuilder extends React.Component<Props, State> {
         const input = prompt("Enter Value", "Blah");
         if (input === "list") {
             list.values.push(new ListData([]));
+        } else if (input === "map") {
+            list.values.push(new MapData([], []));
         } else {
             list.values.push(new StringData(input));
         }
